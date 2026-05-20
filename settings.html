@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>07 · Настройки — Фитнес-платформа</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="settings">
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a href="index.html" class="site-header__brand">
+        <img src="assets/logo.png" alt="COOLBOYDRACO GYM" class="site-logo" width="52" height="52">
+        <div>
+          <span class="site-header__label">07 · Настройки</span>
+          <span class="site-header__title">Настройки приложения</span>
+        </div>
+      </a>
+      <nav class="site-nav" aria-label="Основная навигация">
+        <a href="index.html">Главная</a>
+        <a href="catalog.html">Каталог</a>
+        <a href="profile.html">Профиль</a>
+        <a href="settings.html" class="is-active">Настройки</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="settings-grid-top">
+      <section class="panel">
+        <h2 class="panel__title">Общие настройки</h2>
+        <p class="panel__subtitle">Язык, уведомления, тема</p>
+        <button type="button" class="setting-row setting-row--clickable" id="toggle-notifications"><span data-i18n="settings.notifications">Уведомления</span><span class="setting-row__value" id="val-notifications">ВКЛ</span></button>
+        <button type="button" class="setting-row setting-row--clickable" id="toggle-lang"><span data-i18n="settings.language">Язык</span><span class="setting-row__value" id="val-lang">РУС</span></button>
+        <button type="button" class="setting-row setting-row--clickable" id="toggle-theme"><span data-i18n="settings.theme">Тема</span><span class="setting-row__value" id="val-theme">Тёмная</span></button>
+      </section>
+
+      <section class="panel">
+        <h2 class="panel__title">Аккаунт</h2>
+        <p class="panel__subtitle">Редактирование профиля и безопасность</p>
+        <a href="profile.html?edit=1" class="setting-row">Редактировать профиль</a>
+        <a href="forgot-password.html" class="setting-row">Сменить пароль</a>
+        <a href="#" class="setting-row" id="btn-logout">Выйти из аккаунта</a>
+      </section>
+    </div>
+
+    <section class="panel">
+      <h2 class="panel__title">Системные блоки</h2>
+      <p class="panel__subtitle">Уведомления, тема оформления и приватность</p>
+      <div class="system-cards">
+        <button type="button" class="system-card" data-setting="notifications" data-i18n="settings.push">Push-уведомления</button>
+        <button type="button" class="system-card system-card--highlight" data-setting="theme" data-i18n="settings.themeBlock">Тема оформления</button>
+        <button type="button" class="system-card" data-setting="lang" data-i18n="settings.langBlock">Язык интерфейса</button>
+      </div>
+    </section>
+
+    <div class="settings-footer">
+      <button type="button" class="btn btn--primary" id="btn-save-settings">Сохранить</button>
+      <a href="profile.html" class="btn">Профиль</a>
+      <a href="catalog.html" class="btn">Каталог</a>
+    </div>
+  </main>
+  <script src="js/app.js"></script>
+</body>
+</html>

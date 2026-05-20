@@ -1,0 +1,115 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>06 · Профиль — Фитнес-платформа</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="profile">
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a href="index.html" class="site-header__brand">
+        <img src="assets/logo.png" alt="COOLBOYDRACO GYM" class="site-logo" width="52" height="52">
+        <div>
+          <span class="site-header__label">06 · Профиль</span>
+          <span class="site-header__title">Профиль пользователя</span>
+        </div>
+      </a>
+      <nav class="site-nav" aria-label="Основная навигация">
+        <a href="index.html">Главная</a>
+        <a href="catalog.html">Каталог</a>
+        <a href="profile.html" class="is-active">Профиль</a>
+        <a href="settings.html">Настройки</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="profile-layout">
+      <aside class="panel profile-sidebar">
+        <h2 class="panel__title">Профиль</h2>
+        <p class="panel__subtitle">Личная информация</p>
+        <div class="avatar" id="profile-avatar">Аватар</div>
+        <p class="profile-name" id="profile-name">Имя пользователя</p>
+        <p id="profile-email" hidden></p>
+        <p class="profile-status" id="profile-status">Статус: активный</p>
+        <button type="button" class="btn btn--primary" id="btn-edit-profile" hidden>Редактировать профиль</button>
+        <a href="catalog.html" class="btn" style="margin-top:0.5rem">Каталог</a>
+        <a href="settings.html" class="btn" style="margin-top:0.5rem">Настройки</a>
+      </aside>
+
+      <div>
+        <div class="stats-row">
+          <div class="stat-card">
+            <p class="stat-card__label">Тренировки</p>
+            <p class="stat-card__value" id="stat-workouts">0</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-card__label">Калории</p>
+            <p class="stat-card__value" id="stat-calories">0</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-card__label">Время</p>
+            <p class="stat-card__value" id="stat-minutes">0 мин</p>
+          </div>
+          <div class="stat-card">
+            <p class="stat-card__label">Серии</p>
+            <p class="stat-card__value" id="stat-streak">0</p>
+          </div>
+        </div>
+
+        <section class="panel" id="my-workouts-section" hidden style="margin-bottom:1.25rem">
+          <h2 class="panel__title">Мои тренировки</h2>
+          <p class="panel__subtitle">Созданные вами — можно удалить</p>
+          <ul class="list-cards" id="my-workouts-list"></ul>
+        </section>
+
+        <div class="profile-main-grid">
+          <section class="panel">
+            <h2 class="panel__title">История тренировок</h2>
+            <p class="panel__subtitle">Недавние тренировки</p>
+            <ul class="list-cards" id="history-list"></ul>
+          </section>
+
+          <section class="panel">
+            <h2 class="panel__title">Достижения и прогресс</h2>
+            <p class="panel__subtitle">Статистика и награды</p>
+            <div class="chart-placeholder">Активность за месяц</div>
+            <div class="awards-row">
+              <div class="award-box">Награда 1</div>
+              <div class="award-box">Награда 2</div>
+            </div>
+            <div class="feed-placeholder">Лента достижений</div>
+          </section>
+        </div>
+      </div>
+    </div>
+  </main>
+
+  <div class="modal-overlay" id="modal-edit-profile">
+    <div class="modal" role="dialog" aria-labelledby="edit-profile-title">
+      <h2 class="modal__title" id="edit-profile-title">Редактировать профиль</h2>
+      <p class="panel__subtitle">Имя и эл. почта</p>
+      <form id="edit-profile-form">
+        <div class="form-group">
+          <label class="input-wrap">
+            <input type="text" name="name" id="edit-name" placeholder="Имя" required>
+          </label>
+        </div>
+        <div class="form-group">
+          <label class="input-wrap">
+            <input type="email" name="email" id="edit-email" placeholder="Эл. почта" required>
+          </label>
+        </div>
+        <div class="modal__actions">
+          <button type="button" class="btn" id="edit-profile-cancel">Отмена</button>
+          <button type="submit" class="btn btn--primary">Сохранить</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

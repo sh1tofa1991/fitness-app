@@ -1,0 +1,96 @@
+﻿<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>05 · Тренировка — Фитнес-платформа</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body data-page="workout">
+  <header class="site-header">
+    <div class="site-header__inner">
+      <a href="index.html" class="site-header__brand">
+        <img src="assets/logo.png" alt="COOLBOYDRACO GYM" class="site-logo" width="52" height="52">
+        <div>
+          <span class="site-header__label">05 · Тренировка</span>
+          <span class="site-header__title">Тренировка в реальном времени</span>
+        </div>
+      </a>
+      <nav class="site-nav" aria-label="Основная навигация">
+        <a href="index.html">Главная</a>
+        <a href="catalog.html" class="is-active">Каталог</a>
+        <a href="profile.html">Профиль</a>
+        <a href="settings.html">Настройки</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="page">
+    <div class="workout-layout">
+      <section class="panel video-panel">
+        <h1 class="panel__title" id="workout-title">Тренировка</h1>
+        <p class="panel__subtitle" id="workout-subtitle">Загрузка...</p>
+        <div class="video-placeholder" id="workout-preview">
+          <span>Видео упражнения</span>
+          <div class="play-icon" aria-hidden="true"></div>
+        </div>
+      </section>
+
+      <aside>
+        <div class="stats-grid">
+          <div class="stat-box">
+            <p class="stat-box__label">Таймер</p>
+            <p class="stat-box__value" id="timer-value">00:00</p>
+          </div>
+          <div class="stat-box">
+            <p class="stat-box__label">Повторения</p>
+            <p class="stat-box__value">12 / 20</p>
+          </div>
+          <div class="stat-box">
+            <p class="stat-box__label">Подход</p>
+            <p class="stat-box__value">3 / 4</p>
+          </div>
+          <div class="stat-box">
+            <p class="stat-box__label">Пульс</p>
+            <p class="stat-box__value">128</p>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h2 class="panel__title">Текущие шаги</h2>
+          <p class="panel__subtitle">Этапы тренировки</p>
+          <ul class="list-cards">
+            <li class="list-cards__item">Разминка</li>
+            <li class="list-cards__item list-cards__item--active">
+              <span class="list-cards__item-row">
+                <span>Основной блок</span>
+                <span class="badge">Сейчас</span>
+              </span>
+            </li>
+            <li class="list-cards__item">Заминка</li>
+            <li class="list-cards__item">Растяжка</li>
+          </ul>
+        </div>
+      </aside>
+    </div>
+
+    <div class="btn-row" style="margin-bottom: 1.25rem;">
+      <button type="button" class="btn" id="btn-pause">Пауза</button>
+      <button type="button" class="btn btn--primary">Далее</button>
+      <button type="button" class="btn btn--primary" id="btn-finish">Завершить</button>
+      <a href="catalog.html" class="btn">Назад в каталог</a>
+    </div>
+
+    <section class="panel notes-section">
+      <h2 class="panel__title">Счётчик и заметки</h2>
+      <p class="panel__subtitle">Темп, пульс и заметки</p>
+      <div class="notes-grid">
+        <div class="note-card">Количество повторений</div>
+        <div class="note-card">Техника выполнения</div>
+        <div class="note-card">Комментарий тренера</div>
+      </div>
+    </section>
+  </main>
+  <script src="js/app.js"></script>
+</body>
+</html>
