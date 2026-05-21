@@ -74,7 +74,6 @@ a {
 button,
 [role="button"],
 .chip,
-.system-card,
 .sidebar-categories .list-cards__item,
 .list-cards__item--clickable {
   cursor: pointer;
@@ -142,13 +141,7 @@ img {
 .site-header__title {
   font-size: 1rem;
   font-weight: 600;
-}
-
-.site-header__label {
-  font-size: 0.75rem;
-  color: var(--text-muted);
-  display: block;
-  margin-bottom: 0.15rem;
+  color: var(--gold);
 }
 
 .site-nav {
@@ -517,13 +510,6 @@ img {
   object-fit: cover;
 }
 
-button.system-card {
-  width: 100%;
-  font-family: inherit;
-  color: inherit;
-  cursor: pointer;
-}
-
 .workout-card__details {
   font-size: 0.8125rem;
   color: var(--text-muted);
@@ -776,11 +762,16 @@ button.system-card {
 
 /* ——— Настройки ——— */
 
-.settings-grid-top {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.25rem;
+.page--settings {
+  max-width: 520px;
+}
+
+.panel--settings-main {
   margin-bottom: 1.25rem;
+}
+
+.panel--settings-account {
+  margin-bottom: 0.5rem;
 }
 
 .setting-row {
@@ -817,37 +808,6 @@ button.setting-row {
   font-family: inherit;
   color: inherit;
   text-align: left;
-}
-
-.system-cards {
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 0.75rem;
-}
-
-.system-card {
-  background: var(--bg-card);
-  border: 2px solid var(--border);
-  border-radius: var(--radius);
-  padding: 2rem 1rem;
-  text-align: center;
-  font-size: 0.9375rem;
-  min-height: 100px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: border-color 0.15s, background 0.15s, transform 0.1s;
-}
-
-.system-card:hover {
-  border-color: var(--gold);
-  background: var(--gold-dim);
-}
-
-.system-card--highlight {
-  border-color: var(--border-focus);
-  background: var(--gold-dim);
-  color: var(--gold);
 }
 
 .settings-footer {
@@ -911,7 +871,6 @@ button.setting-row {
   .workout-layout,
   .profile-layout,
   .profile-main-grid,
-  .settings-grid-top,
   .auth-centered {
     grid-template-columns: 1fr;
   }
@@ -920,8 +879,7 @@ button.setting-row {
     grid-template-columns: repeat(2, 1fr);
   }
 
-  .notes-grid,
-  .system-cards {
+  .notes-grid {
     grid-template-columns: 1fr;
   }
 }

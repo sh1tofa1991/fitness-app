@@ -33,12 +33,8 @@
       "settings.notifications": "Уведомления",
       "settings.language": "Язык",
       "settings.theme": "Тема",
-      "settings.push": "Push-уведомления",
-      "settings.themeBlock": "Тема оформления",
-      "settings.langBlock": "Язык интерфейса",
       "settings.general": "Общие настройки",
       "settings.account": "Аккаунт",
-      "settings.system": "Системные блоки",
       "catalog.title": "Каталог тренировок",
       "catalog.create": "+ Создать тренировку",
       "catalog.categories": "Категории",
@@ -61,12 +57,8 @@
       "settings.notifications": "Notifications",
       "settings.language": "Language",
       "settings.theme": "Theme",
-      "settings.push": "Push notifications",
-      "settings.themeBlock": "Appearance",
-      "settings.langBlock": "Interface language",
       "settings.general": "General settings",
       "settings.account": "Account",
-      "settings.system": "System blocks",
       "catalog.title": "Workout catalog",
       "catalog.create": "+ Create workout",
       "catalog.categories": "Categories",
@@ -139,14 +131,6 @@
     if (notifEl) notifEl.textContent = s.notifications ? t("on") : t("off");
     if (langEl) langEl.textContent = s.lang === "en" ? t("lang.en") : t("lang.ru");
     if (themeEl) themeEl.textContent = s.theme === "light" ? t("theme.light") : t("theme.dark");
-
-    document.querySelectorAll(".system-card").forEach((card) => {
-      card.classList.remove("system-card--highlight");
-      const setting = card.dataset.setting;
-      if (setting === "theme") card.classList.add("system-card--highlight");
-      if (setting === "lang" && s.lang === "en") card.classList.add("system-card--highlight");
-      if (setting === "notifications" && s.notifications) card.classList.add("system-card--highlight");
-    });
   }
 
   function applyAllSettings() {
@@ -768,23 +752,6 @@
       s.theme = s.theme === "light" ? "dark" : "light";
       persist();
       toast(s.theme === "light" ? (s.lang === "en" ? "Light theme" : "Светлая тема") : (s.lang === "en" ? "Dark theme" : "Тёмная тема"));
-    });
-
-    document.querySelectorAll(".system-card[data-setting]").forEach((card) => {
-      card.addEventListener("click", () => {
-        const action = card.dataset.setting;
-        if (action === "notifications") {
-          s.notifications = !s.notifications;
-          toast(s.notifications ? (s.lang === "en" ? "Notifications on" : "Уведомления включены") : (s.lang === "en" ? "Notifications off" : "Уведомления выключены"));
-        } else if (action === "theme") {
-          s.theme = s.theme === "light" ? "dark" : "light";
-          toast(s.theme === "light" ? (s.lang === "en" ? "Light theme" : "Светлая тема") : (s.lang === "en" ? "Dark theme" : "Тёмная тема"));
-        } else if (action === "lang") {
-          s.lang = s.lang === "en" ? "ru" : "en";
-          toast(s.lang === "en" ? "Language: English" : "Язык: русский");
-        }
-        persist();
-      });
     });
 
     document.getElementById("btn-save-settings")?.addEventListener("click", () => {
