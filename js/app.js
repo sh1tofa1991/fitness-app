@@ -158,6 +158,40 @@
     return "id_" + Date.now() + "_" + Math.random().toString(36).slice(2, 8);
   }
 
+  const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
+
+  function isValidEmail(email) {
+    const e = String(email || "").trim().toLowerCase();
+    if (!EMAIL_RE.test(e)) return false;
+    const domain = e.split("@")[1];
+    if (!domain || !domain.includes(".")) return false;
+    const tld = domain.split(".").pop();
+    return tld.length >= 2;
+  }
+
+  function emailErrorMsg() {
+    return getSettings().lang === "en"
+      ? "Enter a valid email (e.g. name@mail.com)"
+      : "Укажите корректный адрес эл. почты (например, name@mail.ru)";
+  }
+
+  function isLoggedInUser(session) {
+    return session && !session.isGuest;
+  }
+
+  function readScopedStore(key) {
+    const data = read(key, null);
+    if (Array.isArray(data)) {
+      write(key, {});
+      return {};
+    }
+    return data && typeof data === "object" ? data : {};
+  }
+
+  function writeScopedStore(key, store) {
+    write(key, store);
+  }
+
   function getUsers() {
     return read(KEYS.users, []);
   }
@@ -203,6 +237,9 @@
     if (idx === -1) return { ok: false, error: "Пользователь не найден" };
 
     const email = data.email.trim().toLowerCase();
+    if (!isValidEmail(email)) {
+      return { ok: false, error: emailErrorMsg() };
+    }
     if (users.some((u, i) => i !== idx && u.email === email)) {
       return { ok: false, error: "Эта почта уже занята" };
     }
@@ -223,21 +260,35 @@
   }
 
   function getSavedIds() {
-    return read(KEYS.saved, []);
+    const session = getSession();
+    if (!isLoggedInUser(session)) return [];
+    const store = readScopedStore(KEYS.saved);
+    return store[session.userId] || [];
   }
 
   function setSavedIds(ids) {
-    write(KEYS.saved, ids);
+    const session = getSession();
+    if (!isLoggedInUser(session)) return;
+    const store = readScopedStore(KEYS.saved);
+    store[session.userId] = ids;
+    writeScopedStore(KEYS.saved, store);
   }
 
   function getHistory() {
-    return read(KEYS.history, []);
+    const session = getSession();
+    if (!isLoggedInUser(session)) return [];
+    const store = readScopedStore(KEYS.history);
+    return store[session.userId] || [];
   }
 
   function addHistory(entry) {
-    const list = getHistory();
-    list.unshift(entry);
-    write(KEYS.history, list.slice(0, 50));
+    const session = getSession();
+    if (!isLoggedInUser(session)) return;
+    const store = readScopedStore(KEYS.history);
+    const list = store[session.userId] || [];
+    list.unshift({ ...entry, userId: session.userId });
+    store[session.userId] = list.slice(0, 50);
+    writeScopedStore(KEYS.history, store);
   }
 
   function getUserById(id) {
@@ -265,6 +316,9 @@
   }
 
   function register(name, email, password) {
+    if (!isValidEmail(email)) {
+      return { ok: false, error: emailErrorMsg() };
+    }
     const users = getUsers();
     if (users.some((u) => u.email.toLowerCase() === email.toLowerCase())) {
       return { ok: false, error: "Пользователь с такой почтой уже есть" };
@@ -284,8 +338,14 @@
   }
 
   function login(email, password) {
+    const value = String(email || "").trim();
+    if (value.includes("@")) {
+      if (!isValidEmail(value)) {
+        return { ok: false, error: emailErrorMsg() };
+      }
+    }
     const user = getUsers().find(
-      (u) => u.email === email.trim().toLowerCase() && u.password === password
+      (u) => u.email === value.toLowerCase() && u.password === password
     );
     if (!user) return { ok: false, error: "Неверная почта или пароль" };
     setSession({ userId: user.id, name: user.name, isGuest: false });
@@ -352,7 +412,12 @@
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       const fd = new FormData(form);
-      const res = login(fd.get("login"), fd.get("password"));
+      const loginValue = fd.get("login");
+      if (String(loginValue).includes("@") && !isValidEmail(loginValue)) {
+        showFormError(form, emailErrorMsg());
+        return;
+      }
+      const res = login(loginValue, fd.get("password"));
       if (!res.ok) {
         showFormError(form, res.error);
         return;
@@ -405,6 +470,12 @@
     if (!form) return;
     form.addEventListener("submit", (e) => {
       e.preventDefault();
+      const fd = new FormData(form);
+      const contact = String(fd.get("contact") || "").trim();
+      if (contact.includes("@") && !isValidEmail(contact)) {
+        showFormError(form, emailErrorMsg());
+        return;
+      }
       toast("Код отправлен (демо). Проверьте почту.");
       setTimeout(() => { window.location.href = "index.html"; }, 1500);
     });
@@ -504,6 +575,10 @@
   function bindSaveButtons() {
     document.querySelectorAll(".btn-save").forEach((btn) => {
       btn.onclick = () => {
+        if (!isLoggedInUser(getSession())) {
+          toast("Войдите в аккаунт, чтобы сохранять тренировки", true);
+          return;
+        }
         const id = btn.dataset.id;
         let ids = getSavedIds();
         if (ids.includes(id)) {
@@ -601,6 +676,32 @@
       preview.innerHTML = '<img src="' + escapeHtml(imgSrc) + '" alt="' + escapeHtml(w.title) + '">';
     }
 
+    const steps = ["Разминка", "Основной блок", "Заминка", "Растяжка"];
+    let stepIndex = 0;
+
+    function renderSteps() {
+      const list = document.getElementById("workout-steps");
+      if (!list) return;
+      list.innerHTML = steps
+        .map((name, i) => {
+          const active = i === stepIndex;
+          if (active) {
+            return `<li class="list-cards__item list-cards__item--active">
+              <span class="list-cards__item-row">
+                <span>${escapeHtml(name)}</span>
+                <span class="badge">Сейчас</span>
+              </span>
+            </li>`;
+          }
+          return `<li class="list-cards__item">${escapeHtml(name)}</li>`;
+        })
+        .join("");
+      const subtitle = document.getElementById("workout-subtitle");
+      if (subtitle) subtitle.textContent = steps[stepIndex] + " · " + w.type + " · " + w.duration + " мин";
+    }
+
+    renderSteps();
+
     let seconds = 0;
     let running = true;
     const timerEl = document.getElementById("timer-value");
@@ -615,6 +716,16 @@
     document.getElementById("btn-pause")?.addEventListener("click", function () {
       running = !running;
       this.textContent = running ? "Пауза" : "Продолжить";
+    });
+
+    document.getElementById("btn-next")?.addEventListener("click", () => {
+      if (stepIndex < steps.length - 1) {
+        stepIndex += 1;
+        renderSteps();
+        toast("Этап: " + steps[stepIndex]);
+        return;
+      }
+      toast("Это последний этап. Нажмите «Завершить»", true);
     });
 
     document.getElementById("btn-finish")?.addEventListener("click", () => {
@@ -675,7 +786,6 @@
 
     let stats = { workouts: 0, calories: 0, minutes: 0, streak: 0 };
     if (user) stats = user.stats;
-    else stats.workouts = getHistory().length;
 
     const map = { workouts: stats.workouts, calories: stats.calories, minutes: stats.minutes + " мин", streak: stats.streak };
     Object.keys(map).forEach((k) => {
@@ -685,10 +795,10 @@
 
     const histEl = document.getElementById("history-list");
     if (histEl) {
-      const hist = getHistory();
+      const hist = session.isGuest ? [] : getHistory();
       histEl.innerHTML = hist.length
         ? hist.slice(0, 8).map((h) => `<li class="list-cards__item history-item"><span>${escapeHtml(h.title)} / ${h.duration} мин</span><span>Завершено</span></li>`).join("")
-        : '<li class="list-cards__item">Пока нет завершённых тренировок</li>';
+        : '<li class="list-cards__item">' + (session.isGuest ? "История доступна после регистрации" : "Пока нет завершённых тренировок") + "</li>";
     }
 
     renderMyWorkoutsList();
@@ -706,9 +816,14 @@
       e.preventDefault();
       if (!user) return;
       const fd = new FormData(e.target);
+      const email = fd.get("email");
+      if (!isValidEmail(email)) {
+        toast(emailErrorMsg(), true);
+        return;
+      }
       const res = updateUserProfile(user.id, {
         name: fd.get("name"),
-        email: fd.get("email"),
+        email,
       });
       if (!res.ok) {
         toast(res.error, true);
@@ -728,6 +843,12 @@
 
   function initSettings() {
     let s = applyAllSettings();
+    const session = getSession();
+    const loggedIn = isLoggedInUser(session);
+    const accountPanel = document.getElementById("settings-account-panel");
+    const guestHint = document.getElementById("settings-guest-hint");
+    if (accountPanel) accountPanel.hidden = !loggedIn;
+    if (guestHint) guestHint.hidden = loggedIn;
 
     function persist() {
       saveSettings(s);

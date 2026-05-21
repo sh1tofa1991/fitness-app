@@ -56,24 +56,14 @@
         <div class="panel">
           <h2 class="panel__title">Текущие шаги</h2>
           <p class="panel__subtitle">Этапы тренировки</p>
-          <ul class="list-cards">
-            <li class="list-cards__item">Разминка</li>
-            <li class="list-cards__item list-cards__item--active">
-              <span class="list-cards__item-row">
-                <span>Основной блок</span>
-                <span class="badge">Сейчас</span>
-              </span>
-            </li>
-            <li class="list-cards__item">Заминка</li>
-            <li class="list-cards__item">Растяжка</li>
-          </ul>
+          <ul class="list-cards" id="workout-steps"></ul>
         </div>
       </aside>
     </div>
 
     <div class="btn-row" style="margin-bottom: 1.25rem;">
       <button type="button" class="btn" id="btn-pause">Пауза</button>
-      <button type="button" class="btn btn--primary">Далее</button>
+      <button type="button" class="btn btn--primary" id="btn-next">Далее</button>
       <button type="button" class="btn btn--primary" id="btn-finish">Завершить</button>
       <a href="catalog.html" class="btn">Назад в каталог</a>
     </div>
