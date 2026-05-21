@@ -217,14 +217,19 @@
     write(KEYS.customWorkouts, list);
   }
 
-  function deleteCustomWorkout(workoutId) {
-    const list = getCustomWorkouts().filter((w) => w.id !== workoutId);
+  function deleteCustomWorkout(workoutId, userId) {
+    const list = getCustomWorkouts().filter((w) => w.id !== workoutId || w.userId !== userId);
     saveCustomWorkouts(list);
     setSavedIds(getSavedIds().filter((id) => id !== workoutId));
   }
 
   function getMyWorkouts(userId) {
     return getCustomWorkouts().filter((w) => w.userId === userId);
+  }
+
+  function getCustomWorkoutsForSession(session) {
+    if (!session || session.isGuest) return [];
+    return getCustomWorkouts().filter((w) => w.userId === session.userId);
   }
 
   function canDeleteWorkout(w, session) {
@@ -256,7 +261,8 @@
   }
 
   function getAllWorkouts() {
-    return [...DEFAULT_WORKOUTS, ...getCustomWorkouts()];
+    const session = getSession();
+    return [...DEFAULT_WORKOUTS, ...getCustomWorkoutsForSession(session)];
   }
 
   function getSavedIds() {
@@ -633,11 +639,12 @@
     document.querySelectorAll(".btn-delete").forEach((btn) => {
       btn.onclick = () => {
         const id = btn.dataset.id;
-        const w = getCustomWorkouts().find((x) => x.id === id);
+        const session = getSession();
+        const w = getCustomWorkoutsForSession(session).find((x) => x.id === id);
         if (!w) return;
         const title = w.title;
         if (!confirm('Удалить тренировку «' + title + '»?')) return;
-        deleteCustomWorkout(id);
+        deleteCustomWorkout(id, session.userId);
         toast('Тренировка «' + title + '» удалена');
         if (typeof onDeleted === "function") onDeleted();
         if (document.body.dataset.page === "profile") renderMyWorkoutsList();
@@ -896,7 +903,7 @@
     const params = new URLSearchParams(location.search);
     const id = params.get("id") || "w4";
     const all = getAllWorkouts();
-    const w = all.find((x) => x.id === id) || all[0];
+    const w = all.find((x) => x.id === id) || DEFAULT_WORKOUTS.find((x) => x.id === id) || DEFAULT_WORKOUTS[0];
     document.getElementById("workout-title") && (document.getElementById("workout-title").textContent = w.title);
     document.getElementById("workout-subtitle") && (document.getElementById("workout-subtitle").textContent = w.type + " · " + w.duration + " мин");
 
