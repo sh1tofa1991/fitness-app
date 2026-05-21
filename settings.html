@@ -2,7 +2,7 @@
 <html lang="ru" data-page="settings">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Настройки — COOLBOYDRACO GYM</title>
   <link rel="stylesheet" href="css/styles.css">
   <script src="js/auth-guard.js"></script>
@@ -25,15 +25,14 @@
 
   <main class="page page--settings">
     <section class="panel panel--settings-main">
-      <h2 class="panel__title" data-i18n="settings.general">Общие настройки</h2>
-      <p class="panel__subtitle">Язык, уведомления, тема</p>
-      <button type="button" class="setting-row setting-row--clickable" id="toggle-notifications"><span data-i18n="settings.notifications">Уведомления</span><span class="setting-row__value" id="val-notifications">ВКЛ</span></button>
-      <button type="button" class="setting-row setting-row--clickable" id="toggle-lang"><span data-i18n="settings.language">Язык</span><span class="setting-row__value" id="val-lang">РУС</span></button>
-      <button type="button" class="setting-row setting-row--clickable" id="toggle-theme"><span data-i18n="settings.theme">Тема</span><span class="setting-row__value" id="val-theme">Тёмная</span></button>
+      <h2 class="panel__title">Общие настройки</h2>
+      <p class="panel__subtitle">Уведомления и тема</p>
+      <button type="button" class="setting-row setting-row--clickable" id="toggle-notifications"><span>Уведомления</span><span class="setting-row__value" id="val-notifications">ВКЛ</span></button>
+      <button type="button" class="setting-row setting-row--clickable" id="toggle-theme"><span>Тема</span><span class="setting-row__value" id="val-theme">Тёмная</span></button>
     </section>
 
     <section class="panel panel--settings-account" id="settings-account-panel" hidden>
-      <h2 class="panel__title" data-i18n="settings.account">Аккаунт</h2>
+      <h2 class="panel__title">Аккаунт</h2>
       <p class="panel__subtitle">Редактирование профиля и безопасность</p>
       <a href="profile.html?edit=1" class="setting-row">Редактировать профиль</a>
       <a href="forgot-password.html" class="setting-row">Сменить пароль</a>

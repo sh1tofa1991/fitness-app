@@ -2,7 +2,7 @@
 <html lang="ru" data-page="catalog">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
   <title>Каталог — COOLBOYDRACO GYM</title>
   <link rel="stylesheet" href="css/styles.css">
   <script src="js/auth-guard.js"></script>
@@ -25,8 +25,8 @@
 
   <main class="page">
     <div class="catalog-header-row">
-      <h1 style="font-size:1.5rem;color:var(--gold)" data-i18n="catalog.title">Каталог тренировок</h1>
-      <button type="button" class="btn btn--primary" id="btn-create-workout" data-i18n="catalog.create">+ Создать тренировку</button>
+      <h1 class="page-heading">Каталог тренировок</h1>
+      <button type="button" class="btn btn--primary" id="btn-create-workout">+ Создать тренировку</button>
     </div>
 
     <div class="catalog-toolbar">
@@ -46,7 +46,7 @@
 
     <div class="catalog-layout">
       <aside class="panel sidebar-categories">
-        <h2 class="panel__title" data-i18n="catalog.categories">Категории</h2>
+        <h2 class="panel__title">Категории</h2>
         <ul class="list-cards">
           <li class="list-cards__item is-active" data-category="Все">Все</li>
           <li class="list-cards__item" data-category="Силовые">Силовые</li>

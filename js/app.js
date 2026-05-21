@@ -24,27 +24,10 @@
   const CATEGORIES = ["Все", "Силовые", "Кардио", "Растяжка", "Йога", "Для дома", "Для зала"];
   const WORKOUT_STEPS = ["Разминка", "Основной блок", "Заминка", "Растяжка"];
   const WORKOUT_FINISH_COOLDOWN_MS = 15000;
-  const NAV_I18N_KEYS = ["nav.home", "nav.catalog", "nav.profile", "nav.settings"];
   const MONTH_NAMES_RU = ["январь", "февраль", "март", "апрель", "май", "июнь", "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь"];
   const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[a-z]{2,}$/i;
-  const DEFAULT_SETTINGS = { notifications: true, lang: "ru", theme: "dark" };
-
-  const I18N = {
-    ru: {
-      "nav.home": "Главная", "nav.catalog": "Каталог", "nav.profile": "Профиль", "nav.settings": "Настройки",
-      "settings.notifications": "Уведомления", "settings.language": "Язык", "settings.theme": "Тема",
-      "settings.general": "Общие настройки", "settings.account": "Аккаунт",
-      "catalog.create": "+ Создать тренировку", "catalog.search": "Поиск тренировки",
-      on: "ВКЛ", off: "ВЫКЛ", "theme.dark": "Тёмная", "theme.light": "Светлая", "lang.ru": "РУС", "lang.en": "ENG",
-    },
-    en: {
-      "nav.home": "Home", "nav.catalog": "Catalog", "nav.profile": "Profile", "nav.settings": "Settings",
-      "settings.notifications": "Notifications", "settings.language": "Language", "settings.theme": "Theme",
-      "settings.general": "General settings", "settings.account": "Account",
-      "catalog.create": "+ Create workout", "catalog.search": "Search workouts",
-      on: "ON", off: "OFF", "theme.dark": "Dark", "theme.light": "Light", "lang.ru": "RUS", "lang.en": "ENG",
-    },
-  };
+  const EMAIL_ERROR = "Укажите корректный адрес эл. почты (например, name@mail.ru)";
+  const DEFAULT_SETTINGS = { notifications: true, theme: "dark" };
 
   const ACHIEVEMENTS = [
     { id: "first_workout", icon: "🏁", title: "Первый шаг", desc: "1 тренировка", need: (c) => c.stats.workouts >= 1 },
@@ -144,20 +127,14 @@
 
   function getSettings() {
     const s = read(KEYS.settings, { ...DEFAULT_SETTINGS });
-    if (s.lang === "РУС") s.lang = "ru";
-    if (s.lang === "ENG") s.lang = "en";
     if (s.theme === "Тёмная") s.theme = "dark";
     if (s.theme === "Светлая") s.theme = "light";
-    return { ...DEFAULT_SETTINGS, ...s };
+    const { notifications, theme } = { ...DEFAULT_SETTINGS, ...s };
+    return { notifications, theme };
   }
 
   function saveSettings(s) {
-    write(KEYS.settings, s);
-  }
-
-  function t(key) {
-    const lang = getSettings().lang;
-    return I18N[lang]?.[key] || I18N.ru[key] || key;
+    write(KEYS.settings, { notifications: s.notifications, theme: s.theme });
   }
 
   function toast(msg, isError) {
@@ -192,37 +169,14 @@
     return !!tld && tld.length >= 2;
   }
 
-  function emailErrorMsg() {
-    return getSettings().lang === "en"
-      ? "Enter a valid email (e.g. name@mail.com)"
-      : "Укажите корректный адрес эл. почты (например, name@mail.ru)";
-  }
-
   function applyTheme(theme) {
     document.documentElement.setAttribute("data-theme", theme === "light" ? "light" : "dark");
   }
 
-  function applyLang(lang) {
-    document.documentElement.lang = lang === "en" ? "en" : "ru";
-    document.querySelectorAll("[data-i18n]").forEach((el) => {
-      const text = I18N[lang]?.[el.dataset.i18n];
-      if (text) el.textContent = text;
-    });
-    document.querySelectorAll(".site-nav a").forEach((a, i) => {
-      const text = I18N[lang]?.[NAV_I18N_KEYS[i]];
-      if (text) a.textContent = text;
-    });
-    const createBtn = $("btn-create-workout");
-    if (createBtn) createBtn.textContent = t("catalog.create");
-    const search = $("search-input");
-    if (search) search.placeholder = t("catalog.search");
-  }
-
   function updateSettingsUI(s) {
     const map = {
-      "val-notifications": s.notifications ? t("on") : t("off"),
-      "val-lang": s.lang === "en" ? t("lang.en") : t("lang.ru"),
-      "val-theme": s.theme === "light" ? t("theme.light") : t("theme.dark"),
+      "val-notifications": s.notifications ? "ВКЛ" : "ВЫКЛ",
+      "val-theme": s.theme === "light" ? "Светлая" : "Тёмная",
     };
     Object.entries(map).forEach(([id, text]) => {
       const el = $(id);
@@ -233,7 +187,6 @@
   function applyAllSettings() {
     const s = getSettings();
     applyTheme(s.theme);
-    applyLang(s.lang);
     updateSettingsUI(s);
     return s;
   }
@@ -328,7 +281,7 @@
   }
 
   function register(name, email, password) {
-    if (!isValidEmail(email)) return { ok: false, error: emailErrorMsg() };
+    if (!isValidEmail(email)) return { ok: false, error: EMAIL_ERROR };
     const users = getUsers();
     const norm = email.trim().toLowerCase();
     if (users.some((u) => u.email === norm)) return { ok: false, error: "Пользователь с такой почтой уже есть" };
@@ -348,7 +301,7 @@
 
   function login(email, password) {
     const value = String(email || "").trim();
-    if (value.includes("@") && !isValidEmail(value)) return { ok: false, error: emailErrorMsg() };
+    if (value.includes("@") && !isValidEmail(value)) return { ok: false, error: EMAIL_ERROR };
     const user = getUsers().find((u) => u.email === value.toLowerCase() && u.password === password);
     if (!user) return { ok: false, error: "Неверная почта или пароль" };
     setSession({ userId: user.id, name: user.name, isGuest: false });
@@ -368,7 +321,7 @@
     const idx = users.findIndex((u) => u.id === userId);
     if (idx === -1) return { ok: false, error: "Пользователь не найден" };
     const email = data.email.trim().toLowerCase();
-    if (!isValidEmail(email)) return { ok: false, error: emailErrorMsg() };
+    if (!isValidEmail(email)) return { ok: false, error: EMAIL_ERROR };
     if (users.some((u, i) => i !== idx && u.email === email)) return { ok: false, error: "Эта почта уже занята" };
     users[idx].name = data.name.trim();
     users[idx].email = email;
@@ -446,7 +399,7 @@
       const fd = new FormData(form);
       const loginValue = fd.get("login");
       if (String(loginValue).includes("@") && !isValidEmail(loginValue)) {
-        showFormError(form, emailErrorMsg());
+        showFormError(form, EMAIL_ERROR);
         return;
       }
       const res = login(loginValue, fd.get("password"));
@@ -486,7 +439,7 @@
       e.preventDefault();
       const contact = String(new FormData(form).get("contact") || "").trim();
       if (contact.includes("@") && !isValidEmail(contact)) {
-        showFormError(form, emailErrorMsg());
+        showFormError(form, EMAIL_ERROR);
         return;
       }
       toast("Код отправлен (демо). Проверьте почту.");
@@ -838,7 +791,7 @@
       if (!user) return;
       const fd = new FormData(e.target);
       const email = fd.get("email");
-      if (!isValidEmail(email)) return toast(emailErrorMsg(), true);
+      if (!isValidEmail(email)) return toast(EMAIL_ERROR, true);
       const res = updateUserProfile(user.id, { name: fd.get("name"), email });
       if (!res.ok) return toast(res.error, true);
       user = res.user;
@@ -865,35 +818,27 @@
     const persist = () => {
       saveSettings(s);
       applyTheme(s.theme);
-      applyLang(s.lang);
       updateSettingsUI(s);
     };
 
     $("toggle-notifications")?.addEventListener("click", () => {
       s.notifications = !s.notifications;
       persist();
-      const en = s.lang === "en";
-      toast(s.notifications ? (en ? "Notifications on" : "Уведомления включены") : (en ? "Notifications off" : "Уведомления выключены"));
-    });
-    $("toggle-lang")?.addEventListener("click", () => {
-      s.lang = s.lang === "en" ? "ru" : "en";
-      persist();
-      toast(s.lang === "en" ? "Language: English" : "Язык: русский");
+      toast(s.notifications ? "Уведомления включены" : "Уведомления выключены");
     });
     $("toggle-theme")?.addEventListener("click", () => {
       s.theme = s.theme === "light" ? "dark" : "light";
       persist();
-      const en = s.lang === "en";
-      toast(s.theme === "light" ? (en ? "Light theme" : "Светлая тема") : (en ? "Dark theme" : "Тёмная тема"));
+      toast(s.theme === "light" ? "Светлая тема" : "Тёмная тема");
     });
     $("btn-save-settings")?.addEventListener("click", () => {
       persist();
-      toast(s.lang === "en" ? "Settings saved" : "Настройки сохранены");
+      toast("Настройки сохранены");
     });
     $("btn-logout")?.addEventListener("click", (e) => {
       e.preventDefault();
       logout();
-      toast(s.lang === "en" ? "Logged out" : "Вы вышли из аккаунта");
+      toast("Вы вышли из аккаунта");
       go("index.html");
     });
   }
