@@ -662,6 +662,204 @@
     document.getElementById("modal-edit-profile")?.classList.remove("is-open");
   }
 
+  const MONTH_NAMES_RU = [
+    "январь", "февраль", "март", "апрель", "май", "июнь",
+    "июль", "август", "сентябрь", "октябрь", "ноябрь", "декабрь",
+  ];
+
+  const ACHIEVEMENTS = [
+    { id: "first_workout", icon: "🏁", title: "Первый шаг", desc: "1 тренировка", check: (c) => c.stats.workouts >= 1 },
+    { id: "five_workouts", icon: "💪", title: "В ритме", desc: "5 тренировок", check: (c) => c.stats.workouts >= 5 },
+    { id: "ten_workouts", icon: "🔥", title: "Железный характер", desc: "10 тренировок", check: (c) => c.stats.workouts >= 10 },
+    { id: "calories_100", icon: "⚡", title: "Энергия", desc: "100 ккал", check: (c) => c.stats.calories >= 100 },
+    { id: "calories_500", icon: "🌟", title: "Марафонец", desc: "500 ккал", check: (c) => c.stats.calories >= 500 },
+    { id: "minutes_60", icon: "⏱", title: "Час силы", desc: "60 минут", check: (c) => c.stats.minutes >= 60 },
+    { id: "minutes_300", icon: "🏆", title: "Пятёрка часов", desc: "300 минут", check: (c) => c.stats.minutes >= 300 },
+    { id: "streak_3", icon: "📅", title: "Три дня", desc: "Серия 3 дня", check: (c) => c.stats.streak >= 3 },
+    { id: "month_3", icon: "📊", title: "Активный месяц", desc: "3 тренировки в месяце", check: (c) => c.monthWorkouts >= 3 },
+    { id: "month_10", icon: "🎯", title: "Цель месяца", desc: "10 тренировок в месяце", check: (c) => c.monthWorkouts >= 10 },
+  ];
+
+  function buildProfileContext(user, history) {
+    const stats = user?.stats || { workouts: 0, calories: 0, minutes: 0, streak: 0 };
+    const now = new Date();
+    const monthHistory = history.filter((h) => {
+      const d = new Date(h.date);
+      return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+    });
+    return {
+      stats,
+      history,
+      monthWorkouts: monthHistory.length,
+      monthMinutes: monthHistory.reduce((sum, h) => sum + (h.duration || 0), 0),
+    };
+  }
+
+  function getMonthlyBuckets(history) {
+    const now = new Date();
+    const year = now.getFullYear();
+    const month = now.getMonth();
+    const daysInMonth = new Date(year, month + 1, 0).getDate();
+    const buckets = Array.from({ length: daysInMonth }, () => ({ count: 0, minutes: 0 }));
+
+    history.forEach((h) => {
+      const d = new Date(h.date);
+      if (d.getFullYear() !== year || d.getMonth() !== month) return;
+      const idx = d.getDate() - 1;
+      buckets[idx].count += 1;
+      buckets[idx].minutes += h.duration || 0;
+    });
+
+    return { buckets, year, month, daysInMonth };
+  }
+
+  function formatShortDate(ts) {
+    return new Date(ts).toLocaleDateString("ru-RU", { day: "numeric", month: "short" });
+  }
+
+  function renderMonthlyActivity(history, isGuest) {
+    const el = document.getElementById("activity-chart");
+    if (!el) return;
+
+    if (isGuest) {
+      el.innerHTML = '<p class="activity-chart__empty">Войдите в аккаунт, чтобы видеть активность за месяц</p>';
+      return;
+    }
+
+    const { buckets, year, month, daysInMonth } = getMonthlyBuckets(history);
+    const totalWorkouts = buckets.reduce((s, b) => s + b.count, 0);
+    const totalMinutes = buckets.reduce((s, b) => s + b.minutes, 0);
+    const maxMinutes = Math.max(1, ...buckets.map((b) => b.minutes));
+
+    if (!totalWorkouts) {
+      el.innerHTML =
+        '<div class="activity-chart__head"><span class="activity-chart__title">Активность за ' +
+        escapeHtml(MONTH_NAMES_RU[month]) +
+        '</span></div><p class="activity-chart__empty">В этом месяце пока нет тренировок. Завершите тренировку в каталоге.</p>';
+      return;
+    }
+
+    const bars = buckets
+      .map((b, i) => {
+        const day = i + 1;
+        const height = b.minutes ? Math.max(8, Math.round((b.minutes / maxMinutes) * 100)) : 4;
+        const active = b.count > 0 ? " activity-bar__fill--active" : "";
+        const showLabel = day === 1 || day % 5 === 0 || day === daysInMonth;
+        const label = showLabel ? `<span class="activity-bar__label">${day}</span>` : '<span class="activity-bar__label" aria-hidden="true">&nbsp;</span>';
+        const title = b.count
+          ? day + " " + MONTH_NAMES_RU[month] + ": " + b.count + " тр., " + b.minutes + " мин"
+          : day + " " + MONTH_NAMES_RU[month];
+        return (
+          '<div class="activity-bar" title="' +
+          escapeHtml(title) +
+          '"><div class="activity-bar__fill' +
+          active +
+          '" style="height:' +
+          height +
+          '%"></div>' +
+          label +
+          "</div>"
+        );
+      })
+      .join("");
+
+    el.innerHTML =
+      '<div class="activity-chart__head">' +
+      '<span class="activity-chart__title">Активность за ' +
+      escapeHtml(MONTH_NAMES_RU[month]) +
+      " " +
+      year +
+      "</span>" +
+      '<span class="activity-chart__summary">' +
+      totalWorkouts +
+      " тр. · " +
+      totalMinutes +
+      " мин</span>" +
+      "</div>" +
+      '<div class="activity-chart__bars">' +
+      bars +
+      "</div>";
+  }
+
+  function renderAchievements(user, history, isGuest) {
+    const grid = document.getElementById("achievements-grid");
+    const feed = document.getElementById("achievements-feed");
+    if (!grid || !feed) return;
+
+    if (isGuest) {
+      grid.innerHTML =
+        '<p class="activity-chart__empty" style="grid-column:1/-1">Достижения доступны после регистрации</p>';
+      feed.innerHTML = '<li class="achievements-feed__empty">Завершайте тренировки — награды появятся здесь</li>';
+      return;
+    }
+
+    const ctx = buildProfileContext(user, history);
+    const unlocked = ACHIEVEMENTS.filter((a) => a.check(ctx));
+
+    grid.innerHTML = ACHIEVEMENTS.map((a) => {
+      const ok = a.check(ctx);
+      return (
+        '<div class="award-box' +
+        (ok ? " award-box--unlocked" : " award-box--locked") +
+        '" title="' +
+        escapeHtml(a.desc) +
+        '">' +
+        '<span class="award-box__icon">' +
+        a.icon +
+        "</span>" +
+        '<span class="award-box__title">' +
+        escapeHtml(a.title) +
+        "</span>" +
+        '<span class="award-box__desc">' +
+        escapeHtml(a.desc) +
+        "</span>" +
+        "</div>"
+      );
+    }).join("");
+
+    if (!unlocked.length) {
+      feed.innerHTML =
+        '<li class="achievements-feed__empty">Пока нет достижений — завершите первую тренировку</li>';
+      return;
+    }
+
+    feed.innerHTML = unlocked
+      .map((a) => ({ a, date: guessAchievementDate(a.id, history, ctx) }))
+      .sort((x, y) => (y.date || 0) - (x.date || 0))
+      .map(
+        ({ a, date }) =>
+          '<li class="achievements-feed__item">' +
+          "<span><strong>" +
+          escapeHtml(a.title) +
+          "</strong> — " +
+          escapeHtml(a.desc) +
+          "</span>" +
+          '<span class="achievements-feed__date">' +
+          (date ? formatShortDate(date) : "получено") +
+          "</span>" +
+          "</li>"
+      )
+      .join("");
+  }
+
+  function guessAchievementDate(achievementId, history, ctx) {
+    const sorted = [...history].sort((a, b) => a.date - b.date);
+    if (achievementId === "first_workout" && sorted[0]) return sorted[0].date;
+    if (achievementId === "five_workouts" && sorted[4]) return sorted[4].date;
+    if (achievementId === "ten_workouts" && sorted[9]) return sorted[9].date;
+    if (achievementId.startsWith("month_")) {
+      const now = new Date();
+      const monthItems = sorted.filter((h) => {
+        const d = new Date(h.date);
+        return d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+      });
+      const need = achievementId === "month_10" ? 10 : 3;
+      if (monthItems[need - 1]) return monthItems[need - 1].date;
+    }
+    if (sorted.length) return sorted[sorted.length - 1].date;
+    return null;
+  }
+
   function initWorkout() {
     const params = new URLSearchParams(location.search);
     const id = params.get("id") || "w4";
@@ -819,6 +1017,10 @@
     }
 
     renderMyWorkoutsList();
+
+    const history = session.isGuest ? [] : getHistory();
+    renderMonthlyActivity(history, session.isGuest);
+    renderAchievements(user, history, session.isGuest);
 
     editBtn?.addEventListener("click", () => {
       if (user) openEditProfileModal(user);
