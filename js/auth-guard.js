@@ -1,34 +1,27 @@
-/**
- * Проверка входа до отрисовки страницы — без «мигания» профиля и главной.
- */
+/** Редирект до отрисовки: профиль без входа → главная; вход при сессии → каталог */
 (function () {
   document.documentElement.classList.add("auth-checking");
 
-  var page = document.documentElement.getAttribute("data-page");
+  const page = document.documentElement.getAttribute("data-page");
   if (!page) {
     document.documentElement.classList.remove("auth-checking");
     return;
   }
 
-  var session = null;
+  let session = null;
   try {
-    var raw = localStorage.getItem("gym_session");
+    const raw = localStorage.getItem("gym_session");
     if (raw) session = JSON.parse(raw);
-  } catch (e) {
-    session = null;
-  }
-
-  var KEY_NEED_LOGIN = "auth_need_login";
-  var KEY_ALREADY_IN = "auth_already_in";
+  } catch (_) {}
 
   if (page === "profile" && !session) {
-    sessionStorage.setItem(KEY_NEED_LOGIN, "1");
+    sessionStorage.setItem("auth_need_login", "1");
     location.replace("index.html");
     return;
   }
 
   if (session && !session.isGuest && (page === "login" || page === "register")) {
-    if (page === "login") sessionStorage.setItem(KEY_ALREADY_IN, "1");
+    if (page === "login") sessionStorage.setItem("auth_already_in", "1");
     location.replace("catalog.html");
     return;
   }
