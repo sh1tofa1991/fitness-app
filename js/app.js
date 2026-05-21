@@ -1154,20 +1154,29 @@
   }
 
   function showPendingAuthToast() {
+    const page = document.body.dataset.page || document.documentElement.dataset.page;
     if (sessionStorage.getItem("auth_need_login")) {
       sessionStorage.removeItem("auth_need_login");
-      toast("Войдите в аккаунт или войдите как гость", true);
+      if (page === "login") {
+        toast("Войдите в аккаунт или войдите как гость", true);
+      }
     }
     if (sessionStorage.getItem("auth_already_in")) {
       sessionStorage.removeItem("auth_already_in");
-      toast("Вы уже вошли в аккаунт");
+      if (page === "catalog") {
+        toast("Вы уже вошли в аккаунт");
+      }
     }
+  }
+
+  function isRegisteredSession(session) {
+    return session && !session.isGuest;
   }
 
   function initNavAuth() {
     document.querySelectorAll('a[href="index.html"]').forEach((link) => {
       link.addEventListener("click", (e) => {
-        if (getSession()) {
+        if (isRegisteredSession(getSession())) {
           e.preventDefault();
           toast("Вы уже вошли в аккаунт");
         }
@@ -1178,14 +1187,15 @@
       link.addEventListener("click", (e) => {
         if (!getSession()) {
           e.preventDefault();
-          toast("Войдите в аккаунт или войдите как гость", true);
+          sessionStorage.setItem("auth_need_login", "1");
+          window.location.href = "index.html";
         }
       });
     });
 
     document.querySelectorAll('a[href="register.html"]').forEach((link) => {
       link.addEventListener("click", (e) => {
-        if (getSession()) {
+        if (isRegisteredSession(getSession())) {
           e.preventDefault();
           toast("Вы уже вошли — регистрация не нужна");
         }

@@ -23,11 +23,11 @@
 
   if (page === "profile" && !session) {
     sessionStorage.setItem(KEY_NEED_LOGIN, "1");
-    location.replace("catalog.html");
+    location.replace("index.html");
     return;
   }
 
-  if ((page === "login" || page === "register") && session) {
+  if (session && !session.isGuest && (page === "login" || page === "register")) {
     if (page === "login") sessionStorage.setItem(KEY_ALREADY_IN, "1");
     location.replace("catalog.html");
     return;
