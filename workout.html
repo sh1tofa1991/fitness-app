@@ -34,24 +34,21 @@
       </section>
 
       <aside>
-        <div class="stats-grid">
+        <div class="stats-grid stats-grid--workout">
           <div class="stat-box">
             <p class="stat-box__label">Таймер</p>
             <p class="stat-box__value" id="timer-value">00:00</p>
           </div>
           <div class="stat-box">
             <p class="stat-box__label">Повторения</p>
-            <p class="stat-box__value">12 / 20</p>
+            <p class="stat-box__value" id="reps-value">0 / 20</p>
           </div>
           <div class="stat-box">
             <p class="stat-box__label">Подход</p>
-            <p class="stat-box__value">3 / 4</p>
-          </div>
-          <div class="stat-box">
-            <p class="stat-box__label">Пульс</p>
-            <p class="stat-box__value">128</p>
+            <p class="stat-box__value" id="sets-value">1 / 4</p>
           </div>
         </div>
+        <p class="workout-round-hint" id="workout-round-hint">Круг 1</p>
 
         <div class="panel">
           <h2 class="panel__title">Текущие шаги</h2>
@@ -70,7 +67,7 @@
 
     <section class="panel notes-section">
       <h2 class="panel__title">Счётчик и заметки</h2>
-      <p class="panel__subtitle">Темп, пульс и заметки</p>
+      <p class="panel__subtitle">Темп и заметки к подходам</p>
       <div class="notes-grid">
         <div class="note-card">Количество повторений</div>
         <div class="note-card">Техника выполнения</div>

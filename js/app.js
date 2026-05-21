@@ -677,7 +677,28 @@
     }
 
     const steps = ["Разминка", "Основной блок", "Заминка", "Растяжка"];
+    const REPS_TARGET = 20;
+    const SETS_TARGET = 4;
     let stepIndex = 0;
+    let round = 1;
+    let rep = 0;
+    let set = 1;
+
+    const repsEl = document.getElementById("reps-value");
+    const setsEl = document.getElementById("sets-value");
+    const roundHint = document.getElementById("workout-round-hint");
+
+    function updateWorkoutStats() {
+      if (repsEl) repsEl.textContent = rep + " / " + REPS_TARGET;
+      if (setsEl) setsEl.textContent = set + " / " + SETS_TARGET;
+      if (roundHint) roundHint.textContent = "Круг " + round;
+    }
+
+    function resetSetRep() {
+      rep = 0;
+      set = 1;
+      updateWorkoutStats();
+    }
 
     function renderSteps() {
       const list = document.getElementById("workout-steps");
@@ -697,7 +718,11 @@
         })
         .join("");
       const subtitle = document.getElementById("workout-subtitle");
-      if (subtitle) subtitle.textContent = steps[stepIndex] + " · " + w.type + " · " + w.duration + " мин";
+      if (subtitle) {
+        subtitle.textContent =
+          "Круг " + round + " · " + steps[stepIndex] + " · " + w.type + " · " + w.duration + " мин";
+      }
+      updateWorkoutStats();
     }
 
     renderSteps();
@@ -719,13 +744,34 @@
     });
 
     document.getElementById("btn-next")?.addEventListener("click", () => {
+      if (rep < REPS_TARGET) {
+        rep += 1;
+        updateWorkoutStats();
+        if (rep === REPS_TARGET) toast("Подход " + set + ": все повторения");
+        return;
+      }
+
+      if (set < SETS_TARGET) {
+        set += 1;
+        rep = 0;
+        updateWorkoutStats();
+        toast("Подход " + set + " из " + SETS_TARGET);
+        return;
+      }
+
       if (stepIndex < steps.length - 1) {
         stepIndex += 1;
+        resetSetRep();
         renderSteps();
         toast("Этап: " + steps[stepIndex]);
         return;
       }
-      toast("Это последний этап. Нажмите «Завершить»", true);
+
+      round += 1;
+      stepIndex = 0;
+      resetSetRep();
+      renderSteps();
+      toast("Новый круг " + round + " — " + steps[0]);
     });
 
     document.getElementById("btn-finish")?.addEventListener("click", () => {

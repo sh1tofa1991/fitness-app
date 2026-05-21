@@ -594,6 +594,17 @@ img {
   margin-bottom: 1rem;
 }
 
+.stats-grid--workout {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.workout-round-hint {
+  text-align: center;
+  font-size: 0.8125rem;
+  color: var(--text-muted);
+  margin: -0.35rem 0 1rem;
+}
+
 .stat-box {
   background: var(--bg-card);
   border: 1px solid var(--border);
