@@ -281,14 +281,46 @@
     return store[session.userId] || [];
   }
 
+  const WORKOUT_FINISH_COOLDOWN_MS = 15000;
+
   function addHistory(entry) {
     const session = getSession();
-    if (!isLoggedInUser(session)) return;
+    if (!isLoggedInUser(session)) return false;
     const store = readScopedStore(KEYS.history);
     const list = store[session.userId] || [];
+    const now = Date.now();
+    const last = list[0];
+    if (last && now - last.date < WORKOUT_FINISH_COOLDOWN_MS) return false;
     list.unshift({ ...entry, userId: session.userId });
     store[session.userId] = list.slice(0, 50);
     writeScopedStore(KEYS.history, store);
+    return true;
+  }
+
+  function completeWorkout(w) {
+    const session = getSession();
+    if (!isLoggedInUser(session)) {
+      return { ok: true, saved: false };
+    }
+    const added = addHistory({
+      id: uid(),
+      workoutId: w.id,
+      title: w.title,
+      duration: w.duration,
+      date: Date.now(),
+    });
+    if (!added) {
+      return { ok: false, error: "Тренировка уже засчитана. Подождите немного." };
+    }
+    const user = getUserById(session.userId);
+    if (user) {
+      user.stats.workouts += 1;
+      user.stats.calories += Math.round(w.duration * 8);
+      user.stats.minutes += w.duration;
+      user.stats.streak += 1;
+      updateUser(user);
+    }
+    return { ok: true, saved: true };
   }
 
   function getUserById(id) {
@@ -913,6 +945,9 @@
 
     renderSteps();
 
+    let isFinishing = false;
+    let lastStepAdvanceAt = 0;
+
     let seconds = 0;
     let running = true;
     const timerEl = document.getElementById("timer-value");
@@ -930,6 +965,11 @@
     });
 
     document.getElementById("btn-next")?.addEventListener("click", () => {
+      if (isFinishing) return;
+      const now = Date.now();
+      if (now - lastStepAdvanceAt < 450) return;
+      lastStepAdvanceAt = now;
+
       if (stepIndex < steps.length - 1) {
         stepIndex += 1;
         renderSteps();
@@ -943,27 +983,33 @@
       toast("Подход " + setCount + " завершён · снова " + steps[0]);
     });
 
-    document.getElementById("btn-finish")?.addEventListener("click", () => {
+    document.getElementById("btn-finish")?.addEventListener("click", function () {
+      if (isFinishing) return;
+      isFinishing = true;
+      this.disabled = true;
+      document.getElementById("btn-next")?.setAttribute("disabled", "disabled");
+      document.getElementById("btn-pause")?.setAttribute("disabled", "disabled");
+
       clearInterval(interval);
-      const session = getSession();
-      if (session && !session.isGuest) {
-        const user = getUserById(session.userId);
-        if (user) {
-          user.stats.workouts += 1;
-          user.stats.calories += Math.round(w.duration * 8);
-          user.stats.minutes += w.duration;
-          user.stats.streak += 1;
-          updateUser(user);
-        }
+      const res = completeWorkout(w);
+      if (!res.ok) {
+        isFinishing = false;
+        this.disabled = false;
+        document.getElementById("btn-next")?.removeAttribute("disabled");
+        document.getElementById("btn-pause")?.removeAttribute("disabled");
+        toast(res.error, true);
+        return;
       }
-      addHistory({
-        id: uid(),
-        title: w.title,
-        duration: w.duration,
-        date: Date.now(),
-      });
-      toast("Тренировка завершена! +" + w.duration + " мин");
-      setTimeout(() => { window.location.href = "profile.html"; }, 1200);
+
+      this.textContent = "Сохранение…";
+      toast(
+        res.saved
+          ? "Тренировка завершена! +" + w.duration + " мин"
+          : "Тренировка завершена"
+      );
+      setTimeout(() => {
+        window.location.href = "profile.html";
+      }, 1200);
     });
   }
 
