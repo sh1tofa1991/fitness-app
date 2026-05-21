@@ -1103,6 +1103,10 @@ button.setting-row {
   white-space: nowrap;
 }
 
+html.auth-checking body {
+  visibility: hidden;
+}
+
 .toast {
   position: fixed;
   bottom: 1.5rem;

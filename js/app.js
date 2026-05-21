@@ -443,10 +443,6 @@
   function initLogin() {
     const form = document.getElementById("login-form");
     if (!form) return;
-    if (getSession()) {
-      window.location.href = "catalog.html";
-      return;
-    }
     form.addEventListener("submit", (e) => {
       e.preventDefault();
       const fd = new FormData(form);
@@ -1022,10 +1018,7 @@
 
   function initProfile() {
     const session = getSession();
-    if (!session) {
-      window.location.href = "index.html";
-      return;
-    }
+    if (!session) return;
 
     const nameEl = document.getElementById("profile-name");
     const statusEl = document.getElementById("profile-status");
@@ -1160,8 +1153,50 @@
     });
   }
 
+  function showPendingAuthToast() {
+    if (sessionStorage.getItem("auth_need_login")) {
+      sessionStorage.removeItem("auth_need_login");
+      toast("Войдите в аккаунт или войдите как гость", true);
+    }
+    if (sessionStorage.getItem("auth_already_in")) {
+      sessionStorage.removeItem("auth_already_in");
+      toast("Вы уже вошли в аккаунт");
+    }
+  }
+
+  function initNavAuth() {
+    document.querySelectorAll('a[href="index.html"]').forEach((link) => {
+      link.addEventListener("click", (e) => {
+        if (getSession()) {
+          e.preventDefault();
+          toast("Вы уже вошли в аккаунт");
+        }
+      });
+    });
+
+    document.querySelectorAll('a[href^="profile.html"]').forEach((link) => {
+      link.addEventListener("click", (e) => {
+        if (!getSession()) {
+          e.preventDefault();
+          toast("Войдите в аккаунт или войдите как гость", true);
+        }
+      });
+    });
+
+    document.querySelectorAll('a[href="register.html"]').forEach((link) => {
+      link.addEventListener("click", (e) => {
+        if (getSession()) {
+          e.preventDefault();
+          toast("Вы уже вошли — регистрация не нужна");
+        }
+      });
+    });
+  }
+
   function initGlobal() {
     applyAllSettings();
+    showPendingAuthToast();
+    initNavAuth();
 
     document.querySelectorAll(".sidebar-categories .list-cards__item").forEach((item, i) => {
       if (!item.dataset.category) item.dataset.category = CATEGORIES[i + 1] || item.textContent.trim();
@@ -1172,7 +1207,7 @@
 
   document.addEventListener("DOMContentLoaded", () => {
     initGlobal();
-    const page = document.body.dataset.page;
+    const page = document.body.dataset.page || document.documentElement.dataset.page;
     if (page === "login") initLogin();
     else if (page === "register") initRegister();
     else if (page === "forgot") initForgot();
