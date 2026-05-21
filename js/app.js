@@ -12,12 +12,12 @@
   };
 
   const DEFAULT_WORKOUTS = [
-    { id: "w1", title: "Всё тело 45", category: "Силовые", type: "Силовая", duration: 45, level: "средний", image: "assets/workouts/w1.svg" },
-    { id: "w2", title: "Утренняя мобильность", category: "Растяжка", type: "Мобилити", duration: 20, level: "лёгкий", image: "assets/workouts/w2.svg" },
-    { id: "w3", title: "Кор и пресс", category: "Силовые", type: "Кор и пресс", duration: 25, level: "средний", image: "assets/workouts/w3.svg" },
-    { id: "w4", title: "Интервалы 20", category: "Кардио", type: "Интервалы", duration: 20, level: "высокий", image: "assets/workouts/w4.svg" },
-    { id: "w5", title: "День ног", category: "Силовые", type: "Ноги", duration: 50, level: "продвинутый", image: "assets/workouts/w5.svg" },
-    { id: "w6", title: "Растяжка-разгрузка", category: "Растяжка", type: "Растяжка", duration: 15, level: "лёгкий", image: "assets/workouts/w6.svg" },
+    { id: "w1", title: "Всё тело 45", category: "Силовые", type: "Силовая", duration: 45, level: "средний", image: "assets/workouts/w1.png" },
+    { id: "w2", title: "Утренняя мобильность", category: "Растяжка", type: "Мобилити", duration: 20, level: "лёгкий", image: "assets/workouts/w2.png" },
+    { id: "w3", title: "Кор и пресс", category: "Силовые", type: "Кор и пресс", duration: 25, level: "средний", image: "assets/workouts/w3.png" },
+    { id: "w4", title: "Интервалы 20", category: "Кардио", type: "Интервалы", duration: 20, level: "высокий", image: "assets/workouts/w4.png" },
+    { id: "w5", title: "День ног", category: "Силовые", type: "Ноги", duration: 50, level: "продвинутый", image: "assets/workouts/w5.png" },
+    { id: "w6", title: "Растяжка-разгрузка", category: "Растяжка", type: "Растяжка", duration: 15, level: "лёгкий", image: "assets/workouts/w6.png" },
   ];
 
   const CUSTOM_WORKOUT_IMAGE = "assets/workouts/custom.svg";
@@ -1042,7 +1042,7 @@
 
     const avatar = document.getElementById("profile-avatar");
     if (avatar) {
-      avatar.innerHTML = '<img src="assets/logo.png" alt="Аватар">';
+      avatar.innerHTML = '<img src="assets/logo.svg" alt="Аватар">';
     }
 
     let stats = { workouts: 0, calories: 0, minutes: 0, streak: 0 };

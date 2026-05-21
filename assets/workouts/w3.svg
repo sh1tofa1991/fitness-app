@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 400 240" role="img">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#3d2a1a"/>
+      <stop offset="100%" stop-color="#1a120c"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="240" fill="url(#bg)"/>
+  <ellipse cx="200" cy="118" rx="70" ry="42" fill="none" stroke="#f0a04b" stroke-width="8"/>
+  <rect x="188" y="96" width="24" height="44" rx="8" fill="#d4883a"/>
+  <text x="200" y="28" text-anchor="middle" fill="#ffd9a8" font-family="Segoe UI, Arial, sans-serif" font-size="18" font-weight="600">>@ 8 ?@5AA</text>
+  <text x="200" y="220" text-anchor="middle" fill="#b87a35" font-family="Segoe UI, Arial, sans-serif" font-size="14">!8;>2K5</text>
+</svg>
