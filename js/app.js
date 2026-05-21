@@ -1042,7 +1042,7 @@
 
     const avatar = document.getElementById("profile-avatar");
     if (avatar) {
-      avatar.innerHTML = '<img src="assets/logo.svg" alt="Аватар">';
+      avatar.innerHTML = '<img src="assets/logo.png" alt="Аватар">';
     }
 
     let stats = { workouts: 0, calories: 0, minutes: 0, streak: 0 };
