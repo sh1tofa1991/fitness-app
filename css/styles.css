@@ -422,6 +422,7 @@ img {
   display: flex;
   gap: 0.5rem;
   flex-wrap: wrap;
+  touch-action: pan-x;
 }
 
 .chip {
@@ -432,6 +433,13 @@ img {
   font-size: 0.875rem;
   cursor: pointer;
   font-family: inherit;
+  color: inherit;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: rgba(255, 215, 0, 0.2);
+  position: relative;
+  z-index: 1;
+  flex-shrink: 0;
+  min-height: 44px;
 }
 
 .chip:hover,

@@ -447,16 +447,78 @@
     });
   }
 
+  const FILTER_GOAL = [
+    { label: "Цель", match: null },
+    { label: "Сила", match: (w) => w.category === "Силовые" },
+    { label: "Кардио", match: (w) => w.category === "Кардио" },
+    { label: "Гибкость", match: (w) => ["Растяжка", "Йога"].includes(w.category) },
+    { label: "Дом / зал", match: (w) => ["Для дома", "Для зала"].includes(w.category) },
+  ];
+
+  const FILTER_LEVEL = [
+    { label: "Уровень", value: null },
+    { label: "лёгкий", value: "лёгкий" },
+    { label: "средний", value: "средний" },
+    { label: "высокий", value: "высокий" },
+    { label: "продвинутый", value: "продвинутый" },
+  ];
+
+  const FILTER_DURATION = [
+    { label: "Длительность", match: null },
+    { label: "до 20 мин", match: (w) => w.duration <= 20 },
+    { label: "21–40 мин", match: (w) => w.duration > 20 && w.duration <= 40 },
+    { label: "40+ мин", match: (w) => w.duration > 40 },
+  ];
+
   function initCatalog() {
     const grid = $("workout-grid");
     if (!grid) return;
 
     let activeCategory = "Все";
     let searchQuery = "";
+    const chipState = { goal: 0, level: 0, duration: 0 };
+
+    function applyChipFilters(list) {
+      const goalFn = FILTER_GOAL[chipState.goal].match;
+      const levelVal = FILTER_LEVEL[chipState.level].value;
+      const durFn = FILTER_DURATION[chipState.duration].match;
+      return list.filter((w) => {
+        if (goalFn && !goalFn(w)) return false;
+        if (levelVal && w.level !== levelVal) return false;
+        if (durFn && !durFn(w)) return false;
+        return true;
+      });
+    }
+
+    function updateChipLabels() {
+      const goalBtn = document.querySelector('.chip[data-filter="goal"]');
+      const levelBtn = document.querySelector('.chip[data-filter="level"]');
+      const durBtn = document.querySelector('.chip[data-filter="duration"]');
+      if (goalBtn) {
+        goalBtn.textContent = FILTER_GOAL[chipState.goal].label;
+        goalBtn.classList.toggle("is-active", chipState.goal > 0);
+      }
+      if (levelBtn) {
+        levelBtn.textContent = FILTER_LEVEL[chipState.level].label;
+        levelBtn.classList.toggle("is-active", chipState.level > 0);
+      }
+      if (durBtn) {
+        durBtn.textContent = FILTER_DURATION[chipState.duration].label;
+        durBtn.classList.toggle("is-active", chipState.duration > 0);
+      }
+    }
+
+    function resetChipFilters() {
+      chipState.goal = 0;
+      chipState.level = 0;
+      chipState.duration = 0;
+      updateChipLabels();
+    }
 
     function render() {
       let list = getAllWorkouts();
       if (activeCategory !== "Все") list = list.filter((w) => w.category === activeCategory);
+      list = applyChipFilters(list);
       if (searchQuery) {
         const q = searchQuery.toLowerCase();
         list = list.filter((w) => [w.title, w.type, w.level].some((f) => f.toLowerCase().includes(q)));
@@ -480,6 +542,32 @@
     $("search-input")?.addEventListener("input", (e) => {
       searchQuery = e.target.value.trim();
       render();
+    });
+
+    document.querySelectorAll(".chip[data-filter]").forEach((chip) => {
+      chip.addEventListener("click", (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const kind = chip.dataset.filter;
+        if (kind === "reset") {
+          resetChipFilters();
+          toast("Фильтры сброшены");
+          render();
+          return;
+        }
+        if (kind === "goal") {
+          chipState.goal = (chipState.goal + 1) % FILTER_GOAL.length;
+          toast("Цель: " + FILTER_GOAL[chipState.goal].label);
+        } else if (kind === "level") {
+          chipState.level = (chipState.level + 1) % FILTER_LEVEL.length;
+          toast("Уровень: " + FILTER_LEVEL[chipState.level].label);
+        } else if (kind === "duration") {
+          chipState.duration = (chipState.duration + 1) % FILTER_DURATION.length;
+          toast("Длительность: " + FILTER_DURATION[chipState.duration].label);
+        }
+        updateChipLabels();
+        render();
+      });
     });
 
     $("btn-create-workout")?.addEventListener("click", () => {
