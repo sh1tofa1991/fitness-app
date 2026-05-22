@@ -56,6 +56,8 @@ html[data-theme="light"] .site-nav a.is-active {
 html {
   font-size: 16px;
   -webkit-text-size-adjust: 100%;
+  overflow-x: clip;
+  max-width: 100%;
 }
 
 body {
@@ -64,7 +66,8 @@ body {
   color: var(--text);
   line-height: 1.5;
   min-height: 100vh;
-  overflow-x: hidden;
+  overflow-x: clip;
+  max-width: 100%;
 }
 
 a {
@@ -98,6 +101,8 @@ img {
   background: var(--bg-panel);
   border-bottom: 1px solid var(--border);
   padding: 0.75rem 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .site-header__inner {
@@ -180,6 +185,8 @@ img {
   max-width: var(--max-width);
   margin: 0 auto;
   padding: 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .page--centered {
@@ -763,6 +770,9 @@ img {
   border-radius: var(--radius-sm);
   padding: 1rem;
   margin-bottom: 1rem;
+  max-width: 100%;
+  min-width: 0;
+  overflow: hidden;
 }
 
 .activity-chart__head {
@@ -791,6 +801,8 @@ img {
   gap: 3px;
   height: 100px;
   margin-bottom: 0.35rem;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .activity-bar {
@@ -1101,9 +1113,15 @@ button.setting-row {
   .site-header {
     padding: 0.5rem 0.75rem;
     padding-top: max(0.5rem, env(safe-area-inset-top));
-    position: sticky;
-    top: 0;
-    z-index: 100;
+  }
+
+  .profile-layout,
+  .profile-layout > div,
+  .profile-main-grid,
+  .profile-main-grid > section,
+  .panel {
+    min-width: 0;
+    max-width: 100%;
   }
 
   .site-header__inner {
@@ -1196,6 +1214,9 @@ button.setting-row {
   .catalog-toolbar {
     flex-direction: column;
     align-items: stretch;
+    max-width: 100%;
+    min-width: 0;
+    overflow: hidden;
   }
 
   .search-bar {
@@ -1207,10 +1228,11 @@ button.setting-row {
     flex-wrap: nowrap;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
     padding-bottom: 0.25rem;
-    margin: 0 -0.25rem;
-    padding-left: 0.25rem;
-    padding-right: 0.25rem;
+    margin: 0;
+    padding-left: 0;
+    padding-right: 0;
   }
 
   .filter-chips .chip {
@@ -1233,8 +1255,10 @@ button.setting-row {
     flex-wrap: nowrap;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
+    overscroll-behavior-x: contain;
     gap: 0.5rem;
     padding-bottom: 0.35rem;
+    max-width: 100%;
   }
 
   .sidebar-categories .list-cards__item {
@@ -1322,7 +1346,7 @@ button.setting-row {
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     justify-content: flex-start;
-    min-width: 100%;
+    overscroll-behavior-x: contain;
   }
 
   .activity-bar {
