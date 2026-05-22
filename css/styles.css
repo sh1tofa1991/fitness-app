@@ -287,11 +287,20 @@ img {
   outline: 2px solid var(--gold-dim);
 }
 
-.input-wrap__icon {
+.input-wrap__icon,
+.input-wrap .lucide {
   width: 20px;
   height: 20px;
   flex-shrink: 0;
   color: var(--text-light);
+}
+
+.search-bar__icon,
+.search-bar .lucide {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+  color: var(--text-muted);
 }
 
 .input-wrap input {
@@ -850,9 +859,35 @@ img {
   background: var(--gold-dim);
 }
 
+.ui-icon {
+  width: 1.5rem;
+  height: 1.5rem;
+  display: block;
+  flex-shrink: 0;
+}
+
+.ui-icon--sm {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
 .award-box__icon {
-  font-size: 1.5rem;
-  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  color: var(--text-muted);
+}
+
+.award-box__icon .ui-icon,
+.award-box__icon .lucide {
+  width: 1.75rem;
+  height: 1.75rem;
+}
+
+.award-box--unlocked .award-box__icon {
+  color: var(--gold);
 }
 
 .award-box__title {
@@ -886,6 +921,19 @@ img {
   justify-content: space-between;
   align-items: center;
   gap: 0.5rem;
+}
+
+.achievements-feed__main {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 0;
+}
+
+.achievements-feed__icon {
+  display: flex;
+  flex-shrink: 0;
+  color: var(--gold);
 }
 
 .achievements-feed__item strong {

@@ -1,0 +1,25 @@
+{
+  "name": "fitness-platform",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "postinstall": "node -e \"require('fs').mkdirSync('js/vendor',{recursive:true});require('fs').copyFileSync('node_modules/lucide/dist/umd/lucide.min.js','js/vendor/lucide.min.js')\"",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "lucide": "^1.16.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sh1tofa1991/fitness-app.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/sh1tofa1991/fitness-app/issues"
+  },
+  "homepage": "https://github.com/sh1tofa1991/fitness-app#readme"
+}

@@ -30,16 +30,16 @@
   const DEFAULT_SETTINGS = { notifications: true, theme: "dark" };
 
   const ACHIEVEMENTS = [
-    { id: "first_workout", icon: "🏁", title: "Первый шаг", desc: "1 тренировка", need: (c) => c.stats.workouts >= 1 },
-    { id: "five_workouts", icon: "💪", title: "В ритме", desc: "5 тренировок", need: (c) => c.stats.workouts >= 5 },
-    { id: "ten_workouts", icon: "🔥", title: "Железный характер", desc: "10 тренировок", need: (c) => c.stats.workouts >= 10 },
-    { id: "calories_100", icon: "⚡", title: "Энергия", desc: "100 ккал", need: (c) => c.stats.calories >= 100 },
-    { id: "calories_500", icon: "🌟", title: "Марафонец", desc: "500 ккал", need: (c) => c.stats.calories >= 500 },
-    { id: "minutes_60", icon: "⏱", title: "Час силы", desc: "60 минут", need: (c) => c.stats.minutes >= 60 },
-    { id: "minutes_300", icon: "🏆", title: "Пятёрка часов", desc: "300 минут", need: (c) => c.stats.minutes >= 300 },
-    { id: "streak_3", icon: "📅", title: "Три дня", desc: "Серия 3 дня", need: (c) => c.stats.streak >= 3 },
-    { id: "month_3", icon: "📊", title: "Активный месяц", desc: "3 тренировки в месяце", need: (c) => c.monthWorkouts >= 3 },
-    { id: "month_10", icon: "🎯", title: "Цель месяца", desc: "10 тренировок в месяце", need: (c) => c.monthWorkouts >= 10 },
+    { id: "first_workout", icon: "flag", title: "Первый шаг", desc: "1 тренировка", need: (c) => c.stats.workouts >= 1 },
+    { id: "five_workouts", icon: "dumbbell", title: "В ритме", desc: "5 тренировок", need: (c) => c.stats.workouts >= 5 },
+    { id: "ten_workouts", icon: "flame", title: "Железный характер", desc: "10 тренировок", need: (c) => c.stats.workouts >= 10 },
+    { id: "calories_100", icon: "zap", title: "Энергия", desc: "100 ккал", need: (c) => c.stats.calories >= 100 },
+    { id: "calories_500", icon: "star", title: "Марафонец", desc: "500 ккал", need: (c) => c.stats.calories >= 500 },
+    { id: "minutes_60", icon: "clock", title: "Час силы", desc: "60 минут", need: (c) => c.stats.minutes >= 60 },
+    { id: "minutes_300", icon: "trophy", title: "Пятёрка часов", desc: "300 минут", need: (c) => c.stats.minutes >= 300 },
+    { id: "streak_3", icon: "calendar", title: "Три дня", desc: "Серия 3 дня", need: (c) => c.stats.streak >= 3 },
+    { id: "month_3", icon: "chart-column", title: "Активный месяц", desc: "3 тренировки в месяце", need: (c) => c.monthWorkouts >= 3 },
+    { id: "month_10", icon: "target", title: "Цель месяца", desc: "10 тренировок в месяце", need: (c) => c.monthWorkouts >= 10 },
   ];
 
   const PAGE_INIT = {
@@ -81,6 +81,11 @@
     const d = document.createElement("div");
     d.textContent = s;
     return d.innerHTML;
+  }
+
+  function achievementIcon(name, sizeClass) {
+    const cls = "ui-icon" + (sizeClass ? " " + sizeClass : "");
+    return typeof GymLucide !== "undefined" ? GymLucide.html(name, cls) : "";
   }
 
   function go(url, delayMs) {
@@ -726,7 +731,7 @@
 
     grid.innerHTML = ACHIEVEMENTS.map((a) => {
       const ok = a.need(ctx);
-      return `<div class="award-box${ok ? " award-box--unlocked" : " award-box--locked"}" title="${escapeHtml(a.desc)}"><span class="award-box__icon">${a.icon}</span><span class="award-box__title">${escapeHtml(a.title)}</span><span class="award-box__desc">${escapeHtml(a.desc)}</span></div>`;
+      return `<div class="award-box${ok ? " award-box--unlocked" : " award-box--locked"}" title="${escapeHtml(a.desc)}"><span class="award-box__icon">${achievementIcon(a.icon)}</span><span class="award-box__title">${escapeHtml(a.title)}</span><span class="award-box__desc">${escapeHtml(a.desc)}</span></div>`;
     }).join("");
 
     if (!unlocked.length) {
@@ -739,7 +744,7 @@
       .sort((x, y) => (y.date || 0) - (x.date || 0))
       .map(({ a, date }) => {
         const when = date ? new Date(date).toLocaleDateString("ru-RU", { day: "numeric", month: "short" }) : "получено";
-        return `<li class="achievements-feed__item"><span><strong>${escapeHtml(a.title)}</strong> — ${escapeHtml(a.desc)}</span><span class="achievements-feed__date">${when}</span></li>`;
+        return `<li class="achievements-feed__item"><span class="achievements-feed__main"><span class="achievements-feed__icon">${achievementIcon(a.icon, "ui-icon--sm")}</span><span><strong>${escapeHtml(a.title)}</strong> — ${escapeHtml(a.desc)}</span></span><span class="achievements-feed__date">${when}</span></li>`;
       }).join("");
   }
 
@@ -972,6 +977,7 @@
   }
 
   function initGlobal() {
+    if (typeof GymLucide !== "undefined") GymLucide.init();
     applyAllSettings();
     showPendingAuthToast();
     initNavAuth();
