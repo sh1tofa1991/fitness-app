@@ -763,7 +763,14 @@
     let isFinishing = false;
     let lastStepAdvanceAt = 0;
     let seconds = 0;
-    let running = true;
+    let running = false;
+    let started = false;
+
+    function setWorkoutControlsActive(active) {
+      $("btn-pause")?.toggleAttribute("disabled", !active);
+      $("btn-next")?.toggleAttribute("disabled", !active);
+      $("btn-finish")?.toggleAttribute("disabled", !active);
+    }
 
     function updateWorkoutStats() {
       if ($("step-value")) $("step-value").textContent = stepIndex + 1 + " / " + WORKOUT_STEPS.length;
@@ -793,13 +800,23 @@
       if (timerEl) timerEl.textContent = String(Math.floor(seconds / 60)).padStart(2, "0") + ":" + String(seconds % 60).padStart(2, "0");
     }, 1000);
 
+    $("btn-start")?.addEventListener("click", function () {
+      if (started || isFinishing) return;
+      started = true;
+      running = true;
+      this.hidden = true;
+      setWorkoutControlsActive(true);
+      toast("Тренировка началась");
+    });
+
     $("btn-pause")?.addEventListener("click", function () {
+      if (!started || isFinishing) return;
       running = !running;
       this.textContent = running ? "Пауза" : "Продолжить";
     });
 
     $("btn-next")?.addEventListener("click", () => {
-      if (isFinishing || Date.now() - lastStepAdvanceAt < 450) return;
+      if (!started || isFinishing || Date.now() - lastStepAdvanceAt < 450) return;
       lastStepAdvanceAt = Date.now();
       if (stepIndex < WORKOUT_STEPS.length - 1) {
         stepIndex += 1;
@@ -814,9 +831,10 @@
     });
 
     $("btn-finish")?.addEventListener("click", function () {
-      if (isFinishing) return;
+      if (isFinishing || !started) return;
       isFinishing = true;
       this.disabled = true;
+      $("btn-start")?.setAttribute("hidden", "");
       $("btn-next")?.setAttribute("disabled", "disabled");
       $("btn-pause")?.setAttribute("disabled", "disabled");
       clearInterval(interval);
