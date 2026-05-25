@@ -584,7 +584,6 @@
       setModalOpen("modal-create", true);
     });
 
-    $("modal-close")?.addEventListener("click", () => setModalOpen("modal-create", false));
     $("modal-cancel")?.addEventListener("click", () => setModalOpen("modal-create", false));
     $("modal-create")?.addEventListener("click", (e) => {
       if (e.target.id === "modal-create") setModalOpen("modal-create", false);
