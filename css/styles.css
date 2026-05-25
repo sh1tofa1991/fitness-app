@@ -404,6 +404,10 @@ img {
   margin-top: 0.5rem;
 }
 
+.form-stack .modal__actions .btn + .btn {
+  margin-top: 0;
+}
+
 .form-stack .modal__actions {
   margin-top: 1rem;
 }
@@ -1519,14 +1523,13 @@ button.setting-row {
   }
 
   .modal__actions {
-    flex-direction: row;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
   .modal__actions .btn {
-    flex: 1 1 0;
-    min-width: 0;
-    width: auto;
+    width: 100%;
     min-height: 48px;
+    margin-top: 0;
   }
 
   .toast {
@@ -1669,21 +1672,22 @@ button.setting-row {
 }
 
 .modal__actions {
-  display: flex;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 0.5rem;
   margin-top: 1rem;
   align-items: stretch;
 }
 
 .modal__actions .btn {
-  flex: 1 1 0;
-  min-width: 0;
-  width: auto;
+  width: 100%;
+  max-width: none;
   min-height: 48px;
   padding: 0.7rem 1rem;
   box-sizing: border-box;
   border-radius: var(--radius);
   line-height: 1.2;
+  margin: 0;
 }
 
 .page-heading {
