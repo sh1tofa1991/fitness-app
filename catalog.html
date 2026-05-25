@@ -64,33 +64,48 @@
     <div class="modal" role="dialog" aria-labelledby="modal-title">
       <h2 class="modal__title" id="modal-title">Новая тренировка</h2>
       <p class="panel__subtitle">Создайте свою программу</p>
-      <form id="create-workout-form">
+      <form id="create-workout-form" class="form-stack">
         <div class="form-group">
-          <input type="text" name="title" class="input-select" placeholder="Название" required>
+          <label class="form-label" for="create-title">Название</label>
+          <label class="input-wrap" for="create-title">
+            <input type="text" id="create-title" name="title" placeholder="Например, Утренняя силовая" required>
+          </label>
         </div>
         <div class="form-group">
-          <select name="category" class="input-select" required>
-            <option value="Силовые">Силовые</option>
-            <option value="Кардио">Кардио</option>
-            <option value="Растяжка">Растяжка</option>
-            <option value="Йога">Йога</option>
-            <option value="Для дома">Для дома</option>
-            <option value="Для зала">Для зала</option>
-          </select>
+          <label class="form-label" for="create-category">Категория</label>
+          <div class="select-wrap">
+            <select id="create-category" name="category" required>
+              <option value="Силовые">Силовые</option>
+              <option value="Кардио">Кардио</option>
+              <option value="Растяжка">Растяжка</option>
+              <option value="Йога">Йога</option>
+              <option value="Для дома">Для дома</option>
+              <option value="Для зала">Для зала</option>
+            </select>
+          </div>
         </div>
         <div class="form-group">
-          <input type="text" name="type" class="input-select" placeholder="Тип (например, Силовая)">
+          <label class="form-label" for="create-type">Тип</label>
+          <label class="input-wrap" for="create-type">
+            <input type="text" id="create-type" name="type" placeholder="Например, Силовая">
+          </label>
         </div>
         <div class="form-group">
-          <input type="number" name="duration" class="input-select" placeholder="Длительность (мин)" min="5" max="120" value="30" required>
+          <label class="form-label" for="create-duration">Длительность (мин)</label>
+          <label class="input-wrap" for="create-duration">
+            <input type="number" id="create-duration" name="duration" placeholder="30" min="5" max="120" value="30" required>
+          </label>
         </div>
         <div class="form-group">
-          <select name="level" class="input-select" required>
-            <option value="лёгкий">лёгкий</option>
-            <option value="средний">средний</option>
-            <option value="высокий">высокий</option>
-            <option value="продвинутый">продвинутый</option>
-          </select>
+          <label class="form-label" for="create-level">Уровень</label>
+          <div class="select-wrap">
+            <select id="create-level" name="level" required>
+              <option value="лёгкий">лёгкий</option>
+              <option value="средний">средний</option>
+              <option value="высокий">высокий</option>
+              <option value="продвинутый">продвинутый</option>
+            </select>
+          </div>
         </div>
         <div class="modal__actions">
           <button type="button" class="btn" id="modal-cancel">Отмена</button>
